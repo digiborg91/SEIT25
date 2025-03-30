@@ -13,6 +13,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import io.cucumber.datatable.DataTable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -49,7 +50,6 @@ public class Home extends Context {
 
   @And("valid credentials are supplied {string} and password {string}")
   public void validCredentialsAreSuppliedAdminAndPasswordAdmin(String username, String password) {
-    // Handling Basic Auth using URL format (username:password@)
     String authUrl = "https://" + username + ":" + password + "@the-internet.herokuapp.com/basic_auth";
     getDriver().get(authUrl);
   }
@@ -62,4 +62,36 @@ public class Home extends Context {
     getDriver().quit();
   }
 
+  @Then("the Example {int} table should display the following results")
+  public void theExampleTableShouldDisplayTheFollowingResults(int tableNumber, DataTable expectedTable) {
+
+    String tableId = "table" + tableNumber;
+    WebElement table = getDriver().findElement(By.id(tableId));
+
+    // Get all rows inside the tbody (skip header row)
+    List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
+    List<List<String>> actualTableData = new ArrayList<>();
+
+    for (WebElement row : rows) {
+      // Get all cell data except the last column (Action)
+      List<WebElement> cells = row.findElements(By.cssSelector("td"));
+      List<String> rowData = cells.stream()
+              .map(WebElement::getText)
+              .collect(Collectors.toList());
+
+      // Exclude the "Action" column data, i.e., the last column
+      rowData.remove(rowData.size() - 1);  // Remove the last element, which is "Action"
+
+      actualTableData.add(rowData);
+    }
+
+    // Convert expected Cucumber DataTable to List<List<String>> excluding headers
+    List<List<String>> expectedData = new ArrayList<>(expectedTable.asLists(String.class));
+
+    // Remove header row from expected data (if present)
+    expectedData.remove(0);
+
+    // Assert that actual data matches expected data
+    assertEquals(expectedData, actualTableData, "Table data does not match!");
+  }
 }
