@@ -32,7 +32,7 @@ public class Home extends Context {
   public void homepage_should_display_links(List<String> expectedLinks) {
     Home homePage = new Home(manager);
     List<String> actualLinks = homePage.getExampleLinksText().stream()
-            .map(String::trim) // Ensure no leading/trailing whitespace
+            .map(String::trim)
             .collect(Collectors.toList());
     assertEquals(expectedLinks, actualLinks);
   }
@@ -40,8 +40,8 @@ public class Home extends Context {
   public List<String> getExampleLinksText() {
     return getDriver().findElements(By.cssSelector(("h2 + ul a")))
             .stream()
-            .map(WebElement::getText) // Extract text
-            .collect(Collectors.toList()); // Convert to List<String>
+            .map(WebElement::getText)
+            .collect(Collectors.toList());
   }
 
   @When("the {string} example is opened")
@@ -61,7 +61,6 @@ public class Home extends Context {
     WebElement successMessage = getDriver().findElement(By.tagName("p"));
     String actualMessage = successMessage.getText();
     assertEquals(expectedMessage, actualMessage);
-    getDriver().quit();
   }
 
   @Then("the Example {int} table should display the following results")
@@ -70,30 +69,23 @@ public class Home extends Context {
     String tableId = "table" + tableNumber;
     WebElement table = getDriver().findElement(By.id(tableId));
 
-    // Get all rows inside the tbody (skip header row)
     List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
     List<List<String>> actualTableData = new ArrayList<>();
 
     for (WebElement row : rows) {
-      // Get all cell data except the last column (Action)
       List<WebElement> cells = row.findElements(By.cssSelector("td"));
       List<String> rowData = cells.stream()
               .map(WebElement::getText)
               .collect(Collectors.toList());
 
-      // Exclude the "Action" column data, i.e., the last column
-      rowData.remove(rowData.size() - 1);  // Remove the last element, which is "Action"
-
+      rowData.remove(rowData.size() - 1);  // Exclude the "Action" column data
       actualTableData.add(rowData);
     }
 
     // Convert expected Cucumber DataTable to List<List<String>> excluding headers
     List<List<String>> expectedData = new ArrayList<>(expectedTable.asLists(String.class));
 
-    // Remove header row from expected data (if present)
-    expectedData.remove(0);
-
-    // Assert that actual data matches expected data
+    expectedData.remove(0);// Remove header top row from expectedData
     assertEquals(expectedData, actualTableData, "Table data does not match!");
   }
 }
