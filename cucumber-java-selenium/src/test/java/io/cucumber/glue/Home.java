@@ -31,12 +31,14 @@ public class Home extends Context {
   @Then("the homepage should display the following links:")
   public void homepage_should_display_links(List<String> expectedLinks) {
     Home homePage = new Home(manager);
-    List<String> actualLinks = homePage.getExampleLinksText();
+    List<String> actualLinks = homePage.getExampleLinksText().stream()
+            .map(String::trim) // Ensure no leading/trailing whitespace
+            .collect(Collectors.toList());
     assertEquals(expectedLinks, actualLinks);
   }
 
   public List<String> getExampleLinksText() {
-    return getDriver().findElements(By.tagName("a")) // Get all anchor <a> elements
+    return getDriver().findElements(By.cssSelector(("h2 + ul a")))
             .stream()
             .map(WebElement::getText) // Extract text
             .collect(Collectors.toList()); // Convert to List<String>

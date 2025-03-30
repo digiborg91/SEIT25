@@ -49,8 +49,6 @@ Feature: The Internet
       | Status Codes                     |
       | Typos                            |
       | WYSIWYG Editor                   |
-      | Elemental Selenium               |
-  #Elemental Selenium needs removed as its not in the list
 
   @TEST_TI_0002
   Scenario: Basic Auth allows validated access
