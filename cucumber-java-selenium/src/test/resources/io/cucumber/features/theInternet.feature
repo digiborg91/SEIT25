@@ -51,11 +51,17 @@ Feature: The Internet
       | WYSIWYG Editor                   |
 
   @TEST_TI_0002
-  Scenario: Basic Auth allows validated access
+  Scenario Outline: Basic Auth allows validated access
     Given the page under test is 'https://the-internet.herokuapp.com'
     When the 'Basic Auth' example is opened
     And valid credentials are supplied 'admin' and password 'admin'
-    Then I should see the message 'Congratulations! You must have the proper credentials.'
+    And valid credentials are supplied "<username>" and password "<password>"
+    Then I should see the message "<message>"
+
+    Examples:
+      | username | password | message                                                |
+      | admin    | admin    | Congratulations! You must have the proper credentials. |
+#      | user     | pass     | Not authorized.                                        |
 
   @TEST_TI_0003
   Scenario: Sortable Data Tables - Example 1 displays the expected 4 results
